@@ -9,4 +9,4 @@ This repository currently holds the landing page (`index.html`), deployed on Ver
 ## Branches
 
 - `main`: production
-- `staging`: integration and testing of new features
+- `staging`: integration and testing of new features (deploys the staging environment)
