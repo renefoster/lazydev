@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>lazydev: type less, ship the same</title>
+<title>[staging] lazydev: type less, ship the same</title>
+<meta name="robots" content="noindex, nofollow">
 <meta name="description" content="lazydev turns the chores you repeat, like branching, versioning and releasing, into one-word commands.">
 <meta property="og:title" content="lazydev: type less, ship the same">
 <meta property="og:description" content="Turn the chores you repeat into one-word commands.">
@@ -155,6 +156,9 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
   .code{box-shadow:8px 8px 0 var(--butter)}
 }
 
+/* staging banner */
+.env-banner{background:var(--butter);color:var(--ink);text-align:center;font-weight:700;font-size:.95rem;padding:10px 24px;border-bottom:2px solid var(--ink)}
+
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   .caret,.spin{animation:none}
@@ -162,6 +166,8 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
 </style>
 </head>
 <body>
+
+<div class="env-banner" role="note">Staging environment. This is the <code>staging</code> branch, not production.</div>
 
 <div class="wrap">
   <header class="nav">
