@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>lazydev: type less, ship the same</title>
+<meta name="description" content="lazydev turns the chores you repeat, like branching, versioning and releasing, into one-word commands.">
+<meta property="og:title" content="lazydev: type less, ship the same">
+<meta property="og:description" content="Turn the chores you repeat into one-word commands.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#E6E7F5">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2315152E'/%3E%3Ctext x='32' y='45' font-family='Arial Black,Arial,sans-serif' font-size='38' font-weight='900' text-anchor='middle' fill='%23FFD84D'%3Ez%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;700&family=Unbounded:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --dusk:#E6E7F5;
+  --ink:#15152E;
+  --cobalt:#3B3BF5;
+  --butter:#FFD84D;
+  --mist:#C9CBE8;
+  --periwinkle:#A3A4FF;
+  --mint:#5EE29A;
+  --ink-70:rgba(21,21,46,.72);
+  --font-display:'Unbounded',system-ui,sans-serif;
+  --font-body:'Hanken Grotesk',system-ui,sans-serif;
+  --font-code:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:var(--dusk);
+  color:var(--ink);
+  font-family:var(--font-body);
+  font-size:1.0625rem;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--cobalt);outline-offset:3px;border-radius:4px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+
+/* nav */
+.nav{display:flex;align-items:center;justify-content:space-between;padding:28px 0}
+.wordmark{font-family:var(--font-display);font-weight:600;font-size:1.25rem;letter-spacing:-.03em;text-decoration:none}
+.nav-link{font-weight:500;text-decoration:none;border-bottom:2px solid var(--ink);padding-bottom:2px}
+.nav-link:hover{border-color:var(--cobalt);color:var(--cobalt)}
+
+/* hero */
+.hero{display:grid;gap:48px;padding:56px 0 96px;align-items:center}
+.hero h1{
+  font-family:var(--font-display);
+  font-weight:500;
+  font-size:clamp(2.5rem,7vw,4.75rem);
+  line-height:1.02;
+  letter-spacing:-.045em;
+  margin:0 0 24px;
+}
+.lede{font-size:1.25rem;max-width:34ch;margin:0 0 36px;color:var(--ink-70)}
+.actions{display:flex;flex-wrap:wrap;gap:12px}
+.btn{
+  font:inherit;font-weight:700;
+  display:inline-block;
+  padding:14px 22px;
+  border-radius:999px;
+  border:2px solid var(--ink);
+  background:transparent;color:var(--ink);
+  text-decoration:none;cursor:pointer;
+}
+.btn:hover{background:var(--ink);color:var(--dusk)}
+.btn.primary{background:var(--cobalt);border-color:var(--cobalt);color:#fff}
+.btn.primary:hover{background:var(--ink);border-color:var(--ink)}
+
+/* terminal */
+.term{background:var(--ink);color:#EDEEFF;border-radius:18px;padding:22px 22px 26px;font-family:var(--font-code);font-size:.9rem;line-height:1.5;box-shadow:12px 12px 0 var(--cobalt)}
+.term-head{color:var(--periwinkle);margin-bottom:18px;font-size:.8rem}
+.term-cmd{min-height:1.5em;margin-bottom:14px;font-weight:700}
+.prompt{color:var(--butter);margin-right:.6ch}
+.caret{display:inline-block;width:.6ch;height:1.1em;background:var(--butter);vertical-align:-.15em;margin-left:1px;animation:blink 1s steps(1) infinite}
+.term-steps{list-style:none;margin:0;padding:0;min-height:calc(6 * 1.9em)}
+.step{display:flex;align-items:center;gap:12px;padding:3px 0}
+.step .label{flex:1}
+.step .time{color:var(--periwinkle)}
+.mark{width:1.1em;flex:none;text-align:center;color:var(--mint)}
+.spin{display:inline-block;width:.8em;height:.8em;border:2px solid rgba(255,255,255,.25);border-top-color:var(--butter);border-radius:50%;animation:spin .7s linear infinite}
+.term-done{margin-top:14px;color:var(--butter);font-weight:700;min-height:1.5em}
+.term-note{margin:18px 0 0;font-family:var(--font-body);font-size:.9rem;color:var(--ink-70)}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes blink{50%{opacity:0}}
+
+/* sections */
+.section{padding:96px 0;border-top:2px solid var(--ink)}
+.section h2{
+  font-family:var(--font-display);font-weight:500;
+  font-size:clamp(1.75rem,4vw,2.75rem);
+  line-height:1.1;letter-spacing:-.04em;
+  margin:0 0 20px;max-width:18ch;
+}
+.section-intro{max-width:52ch;margin:0 0 48px;color:var(--ink-70)}
+
+/* comparison table */
+.compare{width:100%;border-collapse:collapse}
+.compare th{text-align:left;font-weight:700;padding:0 24px 14px 0;border-bottom:2px solid var(--ink)}
+.compare td{padding:22px 24px 22px 0;border-bottom:1px solid var(--mist);vertical-align:top}
+.compare td:first-child{font-weight:700;width:22%}
+.compare code{font-family:var(--font-code);font-size:.85rem}
+.by-hand code{color:var(--ink-70)}
+.with-lazy code{color:var(--cobalt);font-weight:700;font-size:1rem}
+
+/* how it works */
+.how{display:grid;gap:48px}
+.steps{list-style:none;margin:0;padding:0;counter-reset:s}
+.steps li{counter-increment:s;position:relative;padding:0 0 32px 64px}
+.steps li::before{
+  content:counter(s);
+  position:absolute;left:0;top:-2px;
+  width:40px;height:40px;border-radius:50%;
+  background:var(--ink);color:var(--butter);
+  font-family:var(--font-display);font-weight:600;font-size:1rem;
+  display:grid;place-items:center;
+}
+.steps h3{font-family:var(--font-display);font-weight:500;font-size:1.25rem;letter-spacing:-.03em;margin:0 0 6px}
+.steps p{margin:0;color:var(--ink-70);max-width:44ch}
+.code{background:var(--ink);color:#EDEEFF;border-radius:18px;padding:24px;font-family:var(--font-code);font-size:.9rem;line-height:1.7;margin:0;overflow-x:auto;box-shadow:12px 12px 0 var(--butter)}
+.code .k{color:var(--butter)}
+.code .c{color:var(--periwinkle)}
+
+/* status */
+.status{background:var(--ink);color:var(--dusk);padding:96px 0}
+.status h2{font-family:var(--font-display);font-weight:500;font-size:clamp(1.75rem,4vw,2.75rem);line-height:1.1;letter-spacing:-.04em;margin:0 0 20px;max-width:20ch}
+.status p{max-width:50ch;margin:0 0 32px;color:var(--mist)}
+.status .btn{border-color:var(--butter);color:var(--ink);background:var(--butter)}
+.status .btn:hover{background:var(--dusk);border-color:var(--dusk)}
+.status :focus-visible{outline-color:var(--butter)}
+
+footer{padding:32px 0;font-size:.95rem;color:var(--ink-70);background:var(--dusk)}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+
+@media (min-width:900px){
+  .hero{grid-template-columns:1.05fr 1fr}
+  .how{grid-template-columns:1fr 1fr;align-items:start}
+}
+
+/* table becomes stacked rows on small screens */
+@media (max-width:760px){
+  .compare thead{position:absolute;left:-9999px}
+  .compare,.compare tbody,.compare tr,.compare td{display:block;width:100%}
+  .compare tr{padding:22px 0;border-bottom:1px solid var(--mist)}
+  .compare td{padding:6px 0;border:0;width:100%}
+  .compare td:first-child{width:100%;font-size:1.1rem}
+  .compare td[data-label]::before{content:attr(data-label);display:block;font-size:.85rem;font-weight:700;margin-bottom:2px}
+  .term{box-shadow:8px 8px 0 var(--cobalt)}
+  .code{box-shadow:8px 8px 0 var(--butter)}
+}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .caret,.spin{animation:none}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="nav">
+    <a class="wordmark" href="#top">lazydev</a>
+    <a class="nav-link" href="https://github.com/renefoster/lazydev">GitHub</a>
+  </header>
+
+  <main id="top">
+    <section class="hero" aria-labelledby="hero-title">
+      <div>
+        <h1 id="hero-title">Type less. Ship the same.</h1>
+        <p class="lede">lazydev turns the chores you repeat, like branching, versioning and releasing, into one-word commands.</p>
+        <div class="actions">
+          <a class="btn primary" href="https://github.com/renefoster/lazydev">View on GitHub</a>
+          <button class="btn" type="button" id="replay">Replay the demo</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="term" role="group" aria-label="Example terminal run of the command lazy ship">
+          <div class="term-head">~/shop-api  main</div>
+          <div class="term-cmd" id="cmd" aria-live="off"><span class="prompt">$</span><span id="typed"></span><span class="caret" aria-hidden="true"></span></div>
+          <ol class="term-steps" id="steps"></ol>
+          <div class="term-done" id="done"></div>
+        </div>
+        <p class="term-note">Example run. You typed 9 characters.</p>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="compare-title">
+      <h2 id="compare-title">Same result, fewer keystrokes</h2>
+      <p class="section-intro">You already run these commands every week. lazydev runs them for you, in order, under a name you pick.</p>
+      <table class="compare">
+        <thead>
+          <tr><th scope="col">What you want</th><th scope="col">By hand</th><th scope="col">With lazydev</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Start a feature</td>
+            <td class="by-hand" data-label="By hand"><code>git switch main &amp;&amp; git pull &amp;&amp; git switch -c feat/login</code></td>
+            <td class="with-lazy" data-label="With lazydev"><code>lazy start login</code></td>
+          </tr>
+          <tr>
+            <td>Cut a release</td>
+            <td class="by-hand" data-label="By hand"><code>npm test &amp;&amp; npm version patch &amp;&amp; git push --follow-tags &amp;&amp; gh release create</code></td>
+            <td class="with-lazy" data-label="With lazydev"><code>lazy ship</code></td>
+          </tr>
+          <tr>
+            <td>Set up a fresh checkout</td>
+            <td class="by-hand" data-label="By hand"><code>cp .env.example .env &amp;&amp; npm ci &amp;&amp; docker compose up -d &amp;&amp; npm run db:migrate</code></td>
+            <td class="with-lazy" data-label="With lazydev"><code>lazy up</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section" aria-labelledby="how-title">
+      <h2 id="how-title">Write the steps once</h2>
+      <div class="how">
+        <ol class="steps">
+          <li>
+            <h3>Write a recipe</h3>
+            <p>List the commands you run today in a <code>lazy.yml</code> file at the root of your repo.</p>
+          </li>
+          <li>
+            <h3>Give it a short name</h3>
+            <p>Call it <code>ship</code>, <code>up</code> or <code>start</code>. Whatever you would type without thinking.</p>
+          </li>
+          <li>
+            <h3>Run it</h3>
+            <p>lazydev runs each step in order and stops at the first failure, so a half-finished release never goes out.</p>
+          </li>
+        </ol>
+        <pre class="code" aria-label="Example lazy.yml file"><code><span class="c"># lazy.yml</span>
+<span class="k">ship:</span>
+  - npm test
+  - npm version patch
+  - git push --follow-tags
+  - gh release create --generate-notes
+
+<span class="k">up:</span>
+  - cp -n .env.example .env
+  - npm ci
+  - docker compose up -d
+  - npm run db:migrate</code></pre>
+      </div>
+    </section>
+  </main>
+</div>
+
+<section class="status" aria-labelledby="status-title">
+  <div class="wrap">
+    <h2 id="status-title">lazydev is in development</h2>
+    <p>The demo above shows the behavior we are building toward. Follow the repository to see it take shape.</p>
+    <a class="btn" href="https://github.com/renefoster/lazydev">Follow on GitHub</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>&copy; 2026 lazydev</span>
+    <a href="https://github.com/renefoster/lazydev">github.com/renefoster/lazydev</a>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var COMMAND = 'lazy ship';
+  var STEPS = [
+    ['Run lint and tests', '4.1s'],
+    ['Bump version to 0.4.2', '0.2s'],
+    ['Write changelog from 11 commits', '1.3s'],
+    ['Build and tag the release', '21.0s'],
+    ['Publish release notes', '2.4s'],
+    ['Deploy to staging', '9.0s']
+  ];
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var typed = document.getElementById('typed');
+  var list = document.getElementById('steps');
+  var done = document.getElementById('done');
+  var replay = document.getElementById('replay');
+  var run = 0;
+
+  function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+
+  function addStep(text, time, finished) {
+    var li = document.createElement('li');
+    li.className = 'step';
+    var mark = document.createElement('span');
+    mark.className = 'mark';
+    var label = document.createElement('span');
+    label.className = 'label';
+    label.textContent = text;
+    var t = document.createElement('span');
+    t.className = 'time';
+    li.appendChild(mark);
+    li.appendChild(label);
+    li.appendChild(t);
+    list.appendChild(li);
+    function finish() {
+      mark.textContent = '✓';
+      t.textContent = time;
+    }
+    if (finished) { finish(); } else {
+      var s = document.createElement('span');
+      s.className = 'spin';
+      mark.appendChild(s);
+    }
+    return finish;
+  }
+
+  function reset() {
+    typed.textContent = '';
+    list.textContent = '';
+    done.textContent = '';
+  }
+
+  function showFinal() {
+    reset();
+    typed.textContent = ' ' + COMMAND;
+    STEPS.forEach(function (s) { addStep(s[0], s[1], true); });
+    done.textContent = 'Released v0.4.2 in 38s.';
+  }
+
+  async function play() {
+    var id = ++run;
+    if (reduce) { showFinal(); return; }
+    reset();
+    await sleep(500);
+    for (var i = 0; i < COMMAND.length; i++) {
+      if (id !== run) return;
+      typed.textContent = ' ' + COMMAND.slice(0, i + 1);
+      await sleep(85);
+    }
+    await sleep(350);
+    for (var j = 0; j < STEPS.length; j++) {
+      if (id !== run) return;
+      var finish = addStep(STEPS[j][0], STEPS[j][1], false);
+      await sleep(j === 3 ? 900 : 480);
+      if (id !== run) return;
+      finish();
+    }
+    if (id !== run) return;
+    await sleep(250);
+    done.textContent = 'Released v0.4.2 in 38s.';
+  }
+
+  replay.addEventListener('click', play);
+  play();
+})();
+</script>
+</body>
+</html>
